@@ -105,3 +105,6 @@ dist
 
 # Rollup Build files
 public/build/
+
+# Firebase Cache
+.firebase/
