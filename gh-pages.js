@@ -4,7 +4,7 @@ ghpages.publish(
     'public', // path to public directory
     {
         branch: 'gh-pages',
-        repo: 'https://github.com/Kikasuru/mge-slotmachine.git',
+        repo: 'https://github.com/Kikasuru/pal-grimore.git',
         user: {
             name: 'Edlyn McGathy',
             email: '45546181+Kikasuru@users.noreply.github.com'

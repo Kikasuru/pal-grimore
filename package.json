@@ -8,7 +8,7 @@
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build-theme": "smui-theme compile public/build/smui.css -i src/theme",
-    "deploy": "rollup -c && node gh-pages"
+    "deploy": "npm run build && node gh-pages"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
