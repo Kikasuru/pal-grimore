@@ -73,33 +73,27 @@
 			}
 		});
 
-		interface paletteURLs {
-			img: string,
-			pal: string
-		}
-
-		async function waitForUrls(img: string, pal:string): Promise<paletteURLs> {
-			let urls: paletteURLs = {img: "", pal: ""}
+		async function waitForUrls(index: number): Promise<void> {
+			let imgLink = ""
 			
 			try {
-				urls.img = await getDownloadURL(ref(storage, img));
-				urls.pal = await getDownloadURL(ref(storage, pal));
+				imgLink = await getDownloadURL(ref(storage, palList[index].data.img));
+				palList[index].data.img = imgLink;
 			}
 			catch (err) {
-				urls = await waitForUrls(img, pal);
-			}
-			finally {
-				return urls;
+				await waitForUrls(index);
 			}
 		}
 
-		for (let i = 0; i < palList.length; i++) {
-			let urls = await waitForUrls(palList[i].data.img, palList[i].data.pal);
-			palList[i].data.img = urls.img;
-			palList[i].data.pal = urls.pal;
-		}
+		let urlWaits: Array<Promise<void>> = [];
 
-		applyFilter();
+		palList.forEach((e, i) => {
+			urlWaits.push(waitForUrls(i));
+		})
+
+		Promise.all(urlWaits).then(() => {
+			applyFilter();
+		})
 	});
 
 	async function deletePalette(id: string) {
@@ -126,7 +120,7 @@
                                 <img class="game-icon" src="/assets/bbcf_icon.png" alt="BBCF" />
                                 <div class="buttons">
                                     <!-- <IconButton class="material-icons">favorite</IconButton> -->
-                                    <IconButton class="material-icons">file_download</IconButton>
+                                    <IconButton class="material-icons" on:click={async() => {window.open(await getDownloadURL(ref(storage, pal.data.pal)), '_blank');}}>file_download</IconButton>
 									{#if user !== null && user.uid === pal.data.poster}
 										<IconButton class="material-icons" on:click={() => {deletePalette(pal.id)}}>delete</IconButton>
 									{/if}
