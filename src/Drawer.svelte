@@ -7,7 +7,7 @@
     import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, User, UserCredential, signOut } from "firebase/auth";
     import { auth } from "./lib/firebase";
 
-    import { loadCmpl } from "./lib/games/bbcf";
+    import { loadCfpl } from "./lib/games/bbcf";
 
     export let smallScreen: boolean = false;
     export let drawerOpen: boolean = true;
@@ -75,8 +75,8 @@
 
         const buffer = await uploadInput.files[0].arrayBuffer();
         try {
-            const cmpl = loadCmpl(buffer);
-            uploadDialog.openUpload(cmpl);
+            const cfpl = loadCfpl(buffer);
+            uploadDialog.openUpload(cfpl);
         } catch (err) {
             kitchen.push({
                 label: `${err}`,

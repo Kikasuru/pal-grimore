@@ -7,22 +7,22 @@ const header = "IMPLCF\x00\x00";
 const palStart = 0x94;
 const palSize = 256;
 
-export interface CmplData {
+export interface CfplData {
     readonly pal: Palette,
     readonly name: string,
     readonly auth: string,
     readonly desc: string,
     readonly char: number,
 
-    readonly cmpl: ArrayBuffer
+    readonly cfpl: ArrayBuffer
 }
 
 /**
  * Loads a BBCF CMPL file into a palette.
  * @param {ArrayBuffer} file - The CMPL file in an ArrayBuffer.
- * @returns {CmplData} The data for this file.
+ * @returns {CfplData} The data for this file.
  */
-export function loadCmpl(file: ArrayBuffer): CmplData {
+export function loadCfpl(file: ArrayBuffer): CfplData {
     const dcdr = new TextDecoder();
     const pal = new Uint8Array(file);
 
@@ -38,5 +38,5 @@ export function loadCmpl(file: ArrayBuffer): CmplData {
     let name = dcdr.decode(pal.subarray(20, 52)).replaceAll("\x00", "");
     let auth = dcdr.decode(pal.subarray(52, 84)).replaceAll("\x00", "");
     let desc = dcdr.decode(pal.subarray(84, 148)).replaceAll("\x00", "");
-    return { pal: new Palette(colors), name, auth, desc, char: pal[0x10], cmpl: file };
+    return { pal: new Palette(colors), name, auth, desc, char: pal[0x10], cfpl: file };
 }

@@ -8,14 +8,14 @@
     import { getFirestore, doc, setDoc } from "firebase/firestore";
     import { onAuthStateChanged, User } from "firebase/auth";
     import { auth } from "./lib/firebase";
-    import type { CmplData } from "./lib/games/bbcf";
+    import type { CfplData } from "./lib/games/bbcf";
     import type { UploadData } from "./lib/palette";
     import { generatePushID } from './lib/firebase';
 
     let open = false;
     let imageSrc: string;
     let data: UploadData;
-    let pal: CmplData;
+    let pal: CfplData;
 
     let kitchen: KitchenComponentDev;
 
@@ -29,9 +29,9 @@
 
     /**
      * Opens the upload dialog.
-     * @param {CmplData} palData
+     * @param {CfplData} palData
      */
-    export async function openUpload(palData: CmplData) {
+    export async function openUpload(palData: CfplData) {
         // Create the image and set the data
         imageSrc = await palData.pal.genImage(`/assets/characters/bbcf/${palData.char}.png`);
         data = {name: palData.name, auth: palData.auth, desc: palData.desc, char: palData.char};
@@ -45,18 +45,18 @@
     /**
      * Uploads to the current firebase session
      * @param {UploadData} data
-     * @param {CmplData} palData
+     * @param {CfplData} palData
      */
-     async function upload(data: UploadData, palData: CmplData) {
+     async function upload(data: UploadData, palData: CfplData) {
         let id = generatePushID();
 
         const imgRef = ref(storage, `img/${id}.png`);
-        const palRef = ref(storage, `pal/${id}.cmpl`);
+        const palRef = ref(storage, `pal/${id}.cfpl`);
 
         try {
             let imageString = await palData.pal.genImage(`/assets/characters/bbcf/${data.char}.png`);
             uploadString(imgRef, imageString, "data_url");
-            uploadBytes(palRef, pal.cmpl);
+            uploadBytes(palRef, pal.cfpl);
         }
         catch (err) {
             kitchen.push({
