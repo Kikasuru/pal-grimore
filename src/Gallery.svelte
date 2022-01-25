@@ -8,6 +8,7 @@
 	import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 	import { onAuthStateChanged, User } from 'firebase/auth';
 	import { auth } from './lib/firebase';
+	import { characterSearchNames, characterFullNames } from './lib/games/bbcf';
 
 	let user: User = null;
     onAuthStateChanged(auth, async(authUser: User) => {
@@ -27,11 +28,52 @@
 	let palList: PalElement[] = [];
 	let filterList: PalElement[] = [];
 
+	interface FilterParameter {
+		type: string,
+		data: any
+	}
+
 	/** Applies the filter to the current palette list */
 	export function applyFilter() {
-		filterList = palList.filter((item) => {
-			// TODO: Make this more advanced, add stuff like author search and character search parameters
-			return item.data.name.toLowerCase().includes(filter.toLowerCase());
+		// Parse the string to get any parameters
+		let split = filter.toLowerCase().split(" ");
+		let param: FilterParameter[] = [];
+		
+		for (let i = 0; i < split.length; i++) {
+			console.log(split[i]);
+			switch(split[i]) {
+				case "char:":
+					// Get the character id
+					let id = characterSearchNames.findIndex((e) => {
+						return e.includes(split[i + 1].toLowerCase());
+					})
+
+					param.push({
+						type: "char",
+						data: id
+					});
+
+					// Skip the next string since we've read it
+					i++;
+					break;
+				default:
+					param.push({
+						type: "name",
+						data: split[i].toLowerCase()
+					});
+			}
+		}
+
+		filterList = palList;
+		param.forEach((e) => {
+			filterList = filterList.filter((item) => {
+				switch(e.type) {
+					case "char":
+						return item.data.char === e.data;
+					case "name":
+						return item.data.name.toLowerCase().includes(e.data);
+				}
+			});
 		});
 	}
 
@@ -119,6 +161,7 @@
                             </Subtitle>
                             <div class="bottom-bar">
                                 <img class="game-icon" src="/assets/bbcf_icon.png" alt="BBCF" />
+								<span style="margin: 0; color: #888; font-family: Roboto;">{characterFullNames[pal.data.char]}</span>
                                 <div class="buttons">
                                     <!-- <IconButton class="material-icons">favorite</IconButton> -->
                                     <IconButton class="material-icons" on:click={async() => {window.open(await getDownloadURL(ref(storage, pal.data.pal)));}}>file_download</IconButton>
