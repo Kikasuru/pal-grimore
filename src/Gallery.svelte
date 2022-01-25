@@ -43,11 +43,13 @@
 	const q = query(palettesRef, orderBy("createdOn"), /*limit(pageLimit), startAt(palList.length)*/);
 
 	onSnapshot(q, async(snapshot) => {
+		let newPals: PalElement[] = [];
+
 		snapshot.docChanges().forEach((change) => {
 			if (change.type === "added") {
 				let data = change.doc.data();
 
-				palList.unshift({
+				newPals.unshift({
 					id: change.doc.id,
 					data: {
 						img: data.img,
@@ -74,24 +76,23 @@
 		});
 
 		async function waitForUrls(index: number): Promise<void> {
-			let imgLink = ""
-			
 			try {
-				imgLink = await getDownloadURL(ref(storage, palList[index].data.img));
-				palList[index].data.img = imgLink;
+				let imgLink = await getDownloadURL(ref(storage, newPals[index].data.img));
+				newPals[index].data.img = imgLink;
 			}
 			catch (err) {
 				await waitForUrls(index);
 			}
 		}
 
-		let urlWaits: Array<Promise<void>> = [];
+		let urlWaits: Promise<void>[] = [];
 
-		palList.forEach((e, i) => {
+		newPals.forEach((e, i) => {
 			urlWaits.push(waitForUrls(i));
 		})
 
 		Promise.all(urlWaits).then(() => {
+			palList = newPals.concat(palList)
 			applyFilter();
 		})
 	});
@@ -120,7 +121,7 @@
                                 <img class="game-icon" src="/assets/bbcf_icon.png" alt="BBCF" />
                                 <div class="buttons">
                                     <!-- <IconButton class="material-icons">favorite</IconButton> -->
-                                    <IconButton class="material-icons" on:click={async() => {window.open(await getDownloadURL(ref(storage, pal.data.pal)), '_blank');}}>file_download</IconButton>
+                                    <IconButton class="material-icons" on:click={async() => {window.open(await getDownloadURL(ref(storage, pal.data.pal)));}}>file_download</IconButton>
 									{#if user !== null && user.uid === pal.data.poster}
 										<IconButton class="material-icons" on:click={() => {deletePalette(pal.id)}}>delete</IconButton>
 									{/if}
