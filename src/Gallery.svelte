@@ -161,7 +161,7 @@
                             </Subtitle>
                             <div class="bottom-bar">
                                 <img class="game-icon" src="/assets/bbcf_icon.png" alt="BBCF" />
-								<span style="margin: 0; color: #888; font-family: Roboto;">{characterFullNames[pal.data.char]}</span>
+								<span style="margin: 0; color: #888; font-family: Roboto; text-align: center;">{characterFullNames[pal.data.char]}</span>
                                 <div class="buttons">
                                     <!-- <IconButton class="material-icons">favorite</IconButton> -->
                                     <IconButton class="material-icons" on:click={async() => {window.open(await getDownloadURL(ref(storage, pal.data.pal)));}}>file_download</IconButton>
